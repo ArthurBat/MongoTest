@@ -160,6 +160,14 @@ namespace MongoTest
             var aggregate = collection.Aggregate().Group(new BsonDocument { { "_id", "$borough" }, { "count", new BsonDocument("$sum", 1) } });
             var results = await aggregate.ToListAsync();
             Console.WriteLine("Group Documents by a Field and Calculate Count: " + results.Count);
+
+            // Filter and Group Documents
+            collection = _database.GetCollection<BsonDocument>("restaurants");
+            aggregate = collection.Aggregate()
+                .Match(new BsonDocument { { "borough", "Queens" }, { "cuisine", "Brazilian" } })
+                .Group(new BsonDocument { { "_id", "$address.zipcode" }, { "count", new BsonDocument("$sum", 1) } });
+            results = await aggregate.ToListAsync();
+            Console.WriteLine("Filter and Group Documents: " + results.Count);
         }
 
         private static void InsertData()
