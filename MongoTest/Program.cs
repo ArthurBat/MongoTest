@@ -14,18 +14,26 @@ namespace MongoTest
             _client = new MongoClient();
             _database = _client.GetDatabase("test");
 
-//            InsertData();
-
+            //            InsertData();
+            
             Console.WriteLine("\n============================================\n");
             FindOrQueryData();
+
             Console.ReadLine();
             Console.WriteLine("\n============================================\n");
             UpdateData();
-            Console.ReadLine();
+
             //            Console.WriteLine("\n============================================\n");
             //            RemoveData();
+
+            Console.ReadLine();
             Console.WriteLine("\n============================================\n");
             DataAgregation();
+
+            Console.ReadLine();
+            Console.WriteLine("\n============================================\n");
+            Indexes();
+
             Console.ReadLine();
         }
 
@@ -208,6 +216,21 @@ namespace MongoTest
 
             var collection = _database.GetCollection<BsonDocument>("restaurants");
             collection.InsertOne(document);
+        }
+
+        private static async void Indexes()
+        {
+            // Create a Single-Field Index
+            var collection = _database.GetCollection<BsonDocument>("restaurants");
+            var keys = Builders<BsonDocument>.IndexKeys.Ascending("cuisine");
+            string result = await collection.Indexes.CreateOneAsync(keys);
+            Console.WriteLine("Create a Single-Field Index: " + result);
+
+            // Create a compound index
+            collection = _database.GetCollection<BsonDocument>("restaurants");
+            keys = Builders<BsonDocument>.IndexKeys.Ascending("cuisine").Ascending("address.zipcode");
+            result = await collection.Indexes.CreateOneAsync(keys);
+            Console.WriteLine("Create a compound index: " + result);
         }
     }
 }
