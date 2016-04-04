@@ -2,6 +2,7 @@
 using System.Configuration;
 using System.Threading.Tasks;
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 
 namespace MongoTest2
@@ -16,6 +17,8 @@ namespace MongoTest2
             GetDatabaseNames(client);
             Console.ReadLine();
             GetCollectionsNames(client).Wait();
+            Console.ReadLine();
+            WorkingWithDataModels(client);
             Console.ReadLine();
         }
 
@@ -115,6 +118,44 @@ namespace MongoTest2
             chemp.Add("countries", new BsonArray(new[] { "Бразилия", "Аргентина", "Германия", "Нидерланды" }));
             chemp.Add("finished", new BsonBoolean(true));
             Console.WriteLine(chemp);
+
+            EndMethod();
+        }
+
+        private static void WorkingWithDataModels(MongoClient client)
+        {
+            // Пространство имен MongoDB.Bson добавляет ряд функциональностей к классам C#, которые позволяют использовать объекты этих классов в качестве документов:
+            Person p = new Person { Name = "Bill", Surname = "Gates", Age = 48 };
+            p.Company = new Company { Name = "Microsoft", Year = 1974, Price = 300000 };
+
+            Console.WriteLine(p.ToJson());
+
+            // При создании документа мы можем воспользоваться как стандартным классом C#, так и классом BsonDocument, и при необходимости перейти от одного к другому. 
+            // Например:
+            BsonDocument doc = new BsonDocument
+            {
+                {"Name","Bill"},
+                {"Surname", "Gates"},
+                {"Age", new BsonInt32(48)},
+                { "Company",
+                    new BsonDocument{
+                        {"Name" , "microsoft"},
+                        {"Year", new BsonInt32(1974)},
+                        {"Price", new BsonInt32(3000000)},
+                    }
+                }
+            };
+            p = BsonSerializer.Deserialize<Person>(doc);
+            Console.WriteLine(p.ToJson());
+
+            // С помощью метода Deserialize класса BsonSerializer из пространства имен MongoDB.Bson.Serialization мы можем выполнить десериализацию из документа в 
+            // объект модели Person. При этом важно, чтобы имена свойств модели совпадали с именами элементов в документе (в том числе и по регистру), иначе 
+            // программе не удастся сопоставить элементы и свойства.
+            // Также можно выполнить обратную операцию по преобразованию объекта в BsonDocument:
+            p = new Person { Name = "Bill", Surname = "Gates", Age = 48 };
+            p.Company = new Company { Name = "Microsoft", Year = 1974, Price = 300000 };
+            doc = p.ToBsonDocument();
+            Console.WriteLine(doc);
 
             EndMethod();
         }
