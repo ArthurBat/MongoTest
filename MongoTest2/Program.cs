@@ -22,8 +22,9 @@ namespace MongoTest2
             WorkingWithDataModels(client);
             Console.ReadLine();
             SettingsOfModelsWithAttributs();
-//            Console.ReadLine();
-//            SaveDocs().GetAwaiter().GetResult();
+            Console.ReadLine();
+            //            SaveDocs().GetAwaiter().GetResult();
+            FindDocs().GetAwaiter().GetResult();
             Console.ReadLine();
         }
 
@@ -227,6 +228,58 @@ namespace MongoTest2
             await collection2.InsertOneAsync(person3);
             // При добавлении, если для объекта не установлен идентификатор "_id", то он автоматически генерируется. И затем мы его можем получить:
             Console.WriteLine(person3.Id);
+
+            EndMethod();
+        }
+
+        private static async Task FindDocs()
+        {
+            string connectionString = "mongodb://localhost";
+            var client = new MongoClient(connectionString);
+            var database = client.GetDatabase("test");
+            var collection = database.GetCollection<BsonDocument>("people");
+
+            // Итак, в прошлой теме в коллекцию people в базу данных test было добавлено несколько элементов. Теперь используем метод FindAsync() для их извлечения:
+            // Если мы хотим выбрать все документы, как в данном случае, то в качестве фильтра определяем пустой BsonDocument:
+            var filter = new BsonDocument();
+            // Для создания запросов драйвер C# для MongoDB применяет асинхронный API, и нам надо это учитывать. И так как метод FindAsync() возвращает не просто 
+            // IAsyncCursor, а Task<IAsyncCursor>, то затем нам еще надо его получить:
+            using (var cursor = await collection.FindAsync(filter))
+            {
+                while (await cursor.MoveNextAsync())
+                {
+                    var people = cursor.Current;
+                    foreach (var doc in people)
+                    {
+                        Console.WriteLine(doc);
+                    }
+                }
+            }
+
+            // Для перехода к порции данных используется асинхронный метод MoveNextAsync(), возвращающий объект Task<bool>. Логическое значение в данном случае будет 
+            // показывать, есть ли еще данные.
+            // И для получения извлеченной коллекции элементов применяется выражение cursor.Current, которое возвращает объект IEnumerable< Computer >.
+            // Подобным образом можно получать вместо объектов BsonDocument объекты стандартных классов:
+            var collection2 = database.GetCollection<Person>("people");
+            using (var cursor = await collection2.FindAsync(filter))
+            {
+                while (await cursor.MoveNextAsync())
+                {
+                    var people = cursor.Current;
+                    foreach (Person doc in people)
+                    {
+                        Console.WriteLine("{0} - {1} ({2})", doc.Id, doc.Name, doc.Age);
+                    }
+                }
+            }
+
+            // И аналогичный пример с использованием метода Find:
+            var people3 = await collection2.Find(filter).ToListAsync();
+
+            foreach (Person doc in people3)
+            {
+                Console.WriteLine("{0} - {1} ({2})", doc.Id, doc.Name, doc.Age);
+            }
 
             EndMethod();
         }
