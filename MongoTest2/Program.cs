@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Threading.Tasks;
 using MongoDB.Bson;
@@ -21,6 +22,8 @@ namespace MongoTest2
             WorkingWithDataModels(client);
             Console.ReadLine();
             SettingsOfModelsWithAttributs();
+//            Console.ReadLine();
+//            SaveDocs().GetAwaiter().GetResult();
             Console.ReadLine();
         }
 
@@ -176,6 +179,54 @@ namespace MongoTest2
             // только у него будет значение null.Чтобы избежать добавление в документ элементов, которые имеют значение, можно использовать атрибут BsonIgnoreIfNull:
             Person4 p2 = new Person4 { Name = "Bill", Surname = "Gates", Age = 48 };
             Console.WriteLine(p2.ToJson());
+
+            EndMethod();
+        }
+
+        private static async Task SaveDocs()
+        {
+            string connectionString = "mongodb://localhost";
+            var client = new MongoClient(connectionString);
+            var database = client.GetDatabase("test");
+            var collection = database.GetCollection<BsonDocument>("people");
+
+            // Для добавления данных в коллекцию используется метод InsertOneAsync, определенный в интерфейсе IMongoCollection. Например, добавим в коллекцию 
+            // people один документ:
+            BsonDocument person1 = new BsonDocument
+            {
+                {"Name", "Bill"},
+                {"Age", 32},
+                {"Languages", new BsonArray{"english", "german"}}
+            };
+//            await collection.InsertOneAsync(person1);
+
+            // Кроме метода InsertOneAsync мы также можем использовать для сохранения документов метод InsertManyAsync(), который в качестве параметра принимает 
+            // набор объектов:
+            BsonDocument person2 = new BsonDocument
+            {
+                {"Name", "Steve"},
+                {"Age", 31},
+                {"Languages", new BsonArray {"english", "french"}}
+            };
+            await collection.InsertManyAsync(new[] {person1, person2});
+
+            // Однако мы можем работать не только с объектами BsonDocument, но и со стандартными классами C#. Допустим, нам надо сохранить объекты следующих классов:
+            var collection2 = database.GetCollection<Person>("people");
+            Person person3 = new Person
+            {
+                Name = "Jack",
+                Age = 29,
+                Languages = new List<string> { "english", "german" },
+                Company = new Company
+                {
+                    Name = "Google",
+                    Price = 3000000,
+                    Year = 1998
+                }
+            };
+            await collection2.InsertOneAsync(person3);
+            // При добавлении, если для объекта не установлен идентификатор "_id", то он автоматически генерируется. И затем мы его можем получить:
+            Console.WriteLine(person3.Id);
 
             EndMethod();
         }
