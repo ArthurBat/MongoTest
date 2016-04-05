@@ -20,6 +20,8 @@ namespace MongoTest2
             Console.ReadLine();
             WorkingWithDataModels(client);
             Console.ReadLine();
+            SettingsOfModelsWithAttributs();
+            Console.ReadLine();
         }
 
         private static async void GetDatabaseNames(MongoClient client)
@@ -156,6 +158,24 @@ namespace MongoTest2
             p.Company = new Company { Name = "Microsoft", Year = 1974, Price = 300000 };
             doc = p.ToBsonDocument();
             Console.WriteLine(doc);
+
+            EndMethod();
+        }
+
+        private static void SettingsOfModelsWithAttributs()
+        {
+            // Атрибут BsonIgnore позволяет не учитывать свойство Surname при сериализации объекта в документ. А атрибут BsonElement позволяет задать настройки 
+            // элемента для данного свойства. В частности, здесь изменяется название элемента с Name на First Name. Поэтому при создании документа:
+            Person3 p = new Person3 { Name = "Bill", Surname = "Gates", Age = 48 };
+            p.Company = new Company { Name = "Microsoft", Year = 1974, Price = 300000 };
+            Console.WriteLine(p.ToJson());
+
+            // Игнорирование значений по умолчанию
+            // В примере выше для объекта Person задается объект Company.Однако в какой - то ситуации для объекта Person данный объект может отсутствовать. 
+            // Например, человек не работает ни в какой компании.Однако даже если мы не укажем компанию, такой документ все равно будет содержать данный элемент, 
+            // только у него будет значение null.Чтобы избежать добавление в документ элементов, которые имеют значение, можно использовать атрибут BsonIgnoreIfNull:
+            Person4 p2 = new Person4 { Name = "Bill", Surname = "Gates", Age = 48 };
+            Console.WriteLine(p2.ToJson());
 
             EndMethod();
         }
