@@ -58,7 +58,9 @@
   <ItemGroup>
     <Compile Include="EndMethodHelper.cs" />
     <Compile Include="FilteringData.cs" />
+    <Compile Include="InterfaceIFindFluent.cs" />
     <Compile Include="Models\Company.cs" />
+    <Compile Include="Models\Employee.cs" />
     <Compile Include="Models\Person.cs" />
     <Compile Include="Models\Person2.cs" />
     <Compile Include="Models\Person3.cs" />

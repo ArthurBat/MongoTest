@@ -29,6 +29,10 @@ namespace MongoTest2
             Console.ReadLine();
             FilteringData.FindPeople().GetAwaiter().GetResult();
             Console.ReadLine();
+            InterfaceIFindFluent.SortPeople().GetAwaiter().GetResult();
+            Console.ReadLine();
+            InterfaceIFindFluent.ProjectPeople().GetAwaiter().GetResult();
+            Console.ReadLine();
         }
 
         private static async Task GetCollectionsNames(MongoClient client)
