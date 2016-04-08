@@ -1,31 +1,42 @@
-﻿@{
-    ViewBag.Title = "Home Page";
+﻿
+@model MongoMVC.Models.ComputerList
+
+@{
+    ViewBag.Title = "Список компьютеров";
 }
 
-<div class="jumbotron">
-    <h1>ASP.NET</h1>
-    <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
-    <p><a href="http://asp.net" class="btn btn-primary btn-lg">Learn more &raquo;</a></p>
-</div>
+<h2>Список компьютеров</h2>
+@using (Html.BeginForm())
+{
+    <label for="ComputerName">Поиск по соответствию</label>
+    <input type="text" name="ComputerName" value="@Model.Filter.ComputerName" />
+    <label for="Year">Поиск по году</label>
+    <input type="text" name="Year" value="@Model.Filter.Year" />
+    <input type="submit" value="Поиск" />
+}
+<p>
+    @Html.ActionLink("Добавить", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>Модель</th>
+        <th>Год</th>
+        <th></th>
+    </tr>
 
-<div class="row">
-    <div class="col-md-4">
-        <h2>Getting started</h2>
-        <p>
-            ASP.NET MVC gives you a powerful, patterns-based way to build dynamic websites that
-            enables a clean separation of concerns and gives you full control over markup
-            for enjoyable, agile development.
-        </p>
-        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301865">Learn more &raquo;</a></p>
-    </div>
-    <div class="col-md-4">
-        <h2>Get more libraries</h2>
-        <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
-        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a></p>
-    </div>
-    <div class="col-md-4">
-        <h2>Web Hosting</h2>
-        <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
-        <p><a class="btn btn-default" href="http://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
-    </div>
-</div>
+    @foreach (var item in Model.Computers)
+    {
+        <tr>
+            <td>@Html.DisplayFor(modelItem => item.Name)</td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Year)
+            </td>
+            <td>
+                @Html.ActionLink("Изменить", "Edit", new { id = item.Id }) |
+                @Html.ActionLink("Удалить", "Delete", new { id = item.Id })|
+                @Html.ActionLink("Изображение", "AttachImage", new { id = item.Id })
+            </td>
+        </tr>
+    }
+</table>
+
