@@ -33,5 +33,44 @@ namespace MongoMVC.Controllers
             }
             return await db.Computers.Find(builder.And(filters)).ToListAsync();
         }
+
+        public ActionResult Create()
+        {
+            return View();
+        }
+        [HttpPost]
+        public async Task<ActionResult> Create(Computer c)
+        {
+            if (ModelState.IsValid)
+            {
+                await db.Computers.InsertOneAsync(c);
+                return RedirectToAction("Index");
+            }
+            return View(c);
+        }
+        public async Task<ActionResult> Edit(string id)
+        {
+            Computer c = await db.Computers
+                .Find(new BsonDocument("_id", new ObjectId(id)))
+                .FirstOrDefaultAsync();
+            if (c == null)
+                return HttpNotFound();
+            return View(c);
+        }
+        [HttpPost]
+        public async Task<ActionResult> Edit(Computer c)
+        {
+            if (ModelState.IsValid)
+            {
+                await db.Computers.ReplaceOneAsync(new BsonDocument("_id", new ObjectId(c.Id)), c);
+                return RedirectToAction("Index");
+            }
+            return View(c);
+        }
+        public async Task<ActionResult> Delete(string id)
+        {
+            await db.Computers.DeleteOneAsync(new BsonDocument("_id", new ObjectId(id)));
+            return RedirectToAction("Index");
+        }
     }
 }
