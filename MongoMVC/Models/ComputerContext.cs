@@ -31,7 +31,7 @@ namespace MongoMVC.Models
             get { return database.GetCollection<Computer>("Computers"); }
         }
 
-        public GridFSBucket GridFS
+        public IGridFSBucket GridFS
         {
             get { return gridFS; }
         }
