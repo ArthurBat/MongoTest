@@ -1,0 +1,36 @@
+﻿@model MongoMVC.Models.Computer
+
+@{
+    ViewBag.Title = "Прикрепить изображение";
+}
+<h2>Прикрепить изображение</h2>
+
+@using (Html.BeginForm(null, null, FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+
+    <div>
+        @Html.ValidationSummary(true)
+        <div>
+            @Html.LabelFor(model => model.Name)
+            <div>@Model.Name</div>
+        </div>
+
+        <div>
+            @Html.LabelFor(model => model.ImageId, "Загрузить изображение")
+            <div>
+                <input type="file" name="file" id="file" />
+            </div>
+        </div>
+
+        <div>
+            <div>
+                <input type="submit" value="Добавить" />
+            </div>
+        </div>
+    </div>
+}
+@if (Model.HasImage())
+{
+    <img src="@Url.Action("GetImage", new { id=@Model.ImageId})" />
+}

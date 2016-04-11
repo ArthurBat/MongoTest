@@ -1,0 +1,43 @@
+﻿@model MongoMVC.Models.Computer
+
+@{
+    ViewBag.Title = "Редактировать модель";
+}
+<h2>Редактировать модель</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div>
+
+        @Html.ValidationSummary(true)
+        @Html.HiddenFor(model => model.Id)
+
+        <div>
+            @Html.LabelFor(model => model.Name)
+            <div>
+                @Html.EditorFor(model => model.Name)
+                @Html.ValidationMessageFor(model => model.Name)
+            </div>
+        </div>
+
+        <div>
+            @Html.LabelFor(model => model.Year)
+            <div>
+                @Html.EditorFor(model => model.Year)
+                @Html.ValidationMessageFor(model => model.Year)
+            </div>
+        </div>
+        <div>
+            <input type="submit" value="Сохранить" />
+        </div>
+    </div>
+}
+<div>
+    @Html.ActionLink("Вернуться к списку", "Index")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
