@@ -1,0 +1,42 @@
+﻿
+@model MongoMVC.Models.ComputerList
+
+@{
+    ViewBag.Title = "Список компьютеров";
+}
+
+<h2>Список компьютеров</h2>
+@using (Html.BeginForm())
+{
+    <label for="ComputerName">Поиск по соответствию</label>
+    <input type="text" name="ComputerName" value="@Model.Filter.ComputerName" />
+    <label for="Year">Поиск по году</label>
+    <input type="text" name="Year" value="@Model.Filter.Year" />
+    <input type="submit" value="Поиск" />
+}
+<p>
+    @Html.ActionLink("Добавить", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>Модель</th>
+        <th>Год</th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model.Computers)
+    {
+        <tr>
+            <td>@Html.DisplayFor(modelItem => item.Name)</td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Year)
+            </td>
+            <td>
+                @Html.ActionLink("Изменить", "Edit", new { id = item.Id }) |
+                @Html.ActionLink("Удалить", "Delete", new { id = item.Id })|
+                @Html.ActionLink("Изображение", "AttachImage", new { id = item.Id })
+            </td>
+        </tr>
+    }
+</table>
+
